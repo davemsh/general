@@ -1,5 +1,5 @@
 #!/bin/bash
-# Watch state of XScreenSaver, turn on or off monitor using toggledisplay
+# Watch state of XScreenSaver, turn on or off a Raspberry Pi's HDMI output.
 # Uses toggledisplay
 
 # The assumption is that if this script is being started, the display is on.
