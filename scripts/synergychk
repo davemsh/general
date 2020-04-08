@@ -1,9 +1,11 @@
 #!/bin/bash
-# Ping my Synergy server once every five seconds, start or stop Synergy daemon depending
-# on whether Synergy server is running
+# Ping supplied Synergy server IP once every five seconds, start or stop Synergy client 
+# daemon depending on whether Synergy server is currently running. This addresses the
+# memory leak present in the client daemon process that appears to occur when the server 
+# is unavailable.
 
 # Command to launch without needing to leave terminal open:
-# nohup /home/pi/synergychk 192.168.1.100 & > /dev/null 2>&1&
+# nohup /home/pi/synergychk {IP} & > /dev/null 2>&1&
 
 ip=$1
 errorCount=0
@@ -25,7 +27,7 @@ then
 			if [ $synergyRunning -eq 0 ]
 			then
 				echo "Starting Synergy with server IP $ip"
-				/opt/synergy/bin/synergyc --restart --daemon --name RaspberryPi $ip > /dev/null
+				/opt/synergy/bin/synergyc --restart --daemon --name SynergyClient $ip > /dev/null
 				synergyRunning=1
 			#else
 				#echo "Synergy already running, aborting launch of another instance."
