@@ -1,0 +1,30 @@
+#!/bin/bash
+# Watch state of XScreenSaver, turn on or off monitor using toggledisplay
+# Uses toggledisplay
+
+# The assumption is that if this script is being started, the display is on.
+# May need some fancy tvservice -s mojo if this is not always the case...
+displayOn=1
+
+while :
+do
+	case "`xscreensaver-command -time | egrep -o ' blanked|non-blanked'`" in
+		" blanked")
+			if [ $displayOn -eq 1 ]
+			then
+				echo -e "Screensaver activated."
+				displayOn=0
+				toggledisplay 0
+			fi
+		;;
+		"non-blanked")
+			if [ $displayOn -eq 0 ]
+			then
+				echo -e "Screensaver deactivated."
+				displayOn=1
+				toggledisplay 1
+			fi
+		;;
+	esac
+	sleep 1
+done

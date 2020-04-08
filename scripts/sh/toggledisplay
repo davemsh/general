@@ -1,0 +1,35 @@
+#!/bin/bash
+# Script that will turn on or off display attached to HDMI port, depending on argument
+
+# Check that argument was given
+if [ $# -eq 1 ]
+then
+	# If argument is 1, turn on display
+	if [ $1 -eq 1 ]
+	then
+		echo -e "Turning on display..."
+		tvservice -p
+		fbset -depth 16
+		fbset -depth 24
+
+		# Loop xrefresh a few times to make sure it worked (sometimes it doesn't...)
+		counter=0
+		while [ $counter -lt 20 ]
+		do
+			xrefresh -d :0
+			let counter=counter+1
+			sleep .2
+		done
+	# If argument is 0, turn off display
+	elif [ $1 -eq 0 ]
+	then
+		echo -e "Turning off display..."
+		tvservice -o
+	else
+		echo -e "Argument must be 1 or 0 to toggle display on or off."
+	fi
+else
+	echo -e "Argument must be 1 or 0 to toggle display on or off."
+fi
+
+exit 0

@@ -1,0 +1,55 @@
+#!/bin/bash
+# Ping my Synergy server once every five seconds, start or stop Synergy daemon depending
+# on whether Synergy server is running
+
+# Command to launch without needing to leave terminal open:
+# nohup /home/pi/synergychk 192.168.1.100 & > /dev/null 2>&1&
+
+ip=$1
+errorCount=0
+synergyRunning=0
+
+# Kill any already running Synergy instances to prevent duplicate processes
+sudo /usr/bin/killall -9 synergyc > /dev/null
+
+if [ $# -eq 1 ]
+then
+	while :
+	do
+		ping -w 1 $ip > /dev/null
+		pingReturnValue=$?
+
+		if [ $pingReturnValue -eq 0 ]
+		then
+			# if at ping was returned, start Synergy daemon
+			if [ $synergyRunning -eq 0 ]
+			then
+				echo "Starting Synergy with server IP $ip"
+				/opt/synergy/bin/synergyc --restart --daemon --name RaspberryPi $ip > /dev/null
+				synergyRunning=1
+			#else
+				#echo "Synergy already running, aborting launch of another instance."
+			fi
+		else
+			# if no ping was returned, increment errorCounter. If no pings return after 30 seconds,
+			# stop Synergy daemon and reset errorCounter to 0 for next time
+			if [ $synergyRunning -eq 1 ] && [ $errorCount -ge 6 ];
+			then
+				echo "No response for 30 seconds. Stopping Synergy..."
+				sudo /usr/bin/killall -9 synergyc
+				synergyRunning=0
+				errorCount=0
+			elif [ $synergyRunning -eq 1 ]
+			then
+				errorCount=$((errorCount+1))
+				echo "Lost connection to Synergy server - reconnect attempt #$errorCount"
+			#else
+				#echo "Synergy server not available, continuing to sleep..."
+			fi
+		fi
+		
+		sleep 5
+	done
+else
+	echo -e "\nIncorrect arguments entered.\n\nPlease use the desired IP address to check for\nSynergy server as the only argument.\n"
+fi
