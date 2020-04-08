@@ -1,2 +1,2 @@
 # utils
-General miscellaneous stuff like shell scripts and config files.
+General miscellaneous shell scripts and config files.
