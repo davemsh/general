@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script that will turn on or off display attached to HDMI port, depending on argument
+# Script that will turn on or off a Raspberry Pi's HDMI output, depending on argument.
 
 # Check that argument was given
 if [ $# -eq 1 ]
